@@ -1,29 +1,40 @@
 import "./App.css";
 import { useState } from "react";
 import contacts from "./contacts.json";
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
-}
+
+
 
 function App() {
   const [firstFive, setFirstFive] = useState(contacts.slice(0, 5));
- 
+  const [remaining, setRemaining] = useState(contacts.slice(5))
+  function randomContact() {
+    const random = Math.round(Math.random() * remaining.length)
+    const contact = remaining.splice(random, 1)[0]
+    console.log(remaining.length)
+    setFirstFive([...firstFive, contact])
+  }
+  
   return (
     <div className="App">
       <h1>Ironcontacts</h1>
-      <button onClick={() => setFirstFive((firstFive) => [...firstFive, contacts[getRandomInt(5, contacts.length)]])}>
-          Add Randon Contact
-        </button>
+      <button onClick={() => randomContact()}>
+          Add Random Contact
+      </button>
+      <button onClick={() => setFirstFive((firstFive) => [...firstFive].sort((a, b) => (a.name > b.name) ? 1 : -1))}>
+          Sort By Name
+      </button>
+      <button onClick={() => setFirstFive((firstFive) => [...firstFive].sort((a, b) => (a.popularity < b.popularity) ? 1 : -1))}>
+          Sort By Popularity
+      </button>
       <table id="table">
         <thead>
-          <tr>
+          <tr> 
             <th>Picture</th>
             <th>Name</th>
             <th>Popularity</th>
-            <th>Won an Oscar</th>
-            <th>Won an Emmy</th>
+            <th>Won<br></br>Oscar</th>
+            <th>Won<br></br>Emmy</th>
+            <th>Actions</th>
          </tr>
         </thead>
         <tbody>
@@ -34,8 +45,16 @@ function App() {
             </td>
             <td>{x.name}</td>
             <td>{Math.round(x.popularity * 100) / 100}</td>
-            <td>{x.wonOscar ? '🏆' : ''}</td>
-            <td>{x.wonEmmy ? '🏆' : ''}</td>
+            <td>{x.wonOscar === true ? '🏆' : ''}</td>
+            <td>{x.wonEmmy === true ? '🏆' : ''}</td>
+            <td>
+              <button onClick={() => function deleteContact() {
+                 [...firstFive].splice(x)
+                 setFirstFive([...firstFive])
+                 }}>
+                Delete
+              </button>
+            </td>
           </tr>
         ))}
         </tbody>
